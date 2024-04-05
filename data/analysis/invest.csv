@@ -1,0 +1,294 @@
+presentation_id,feature_name
+1,Investment Firm,"Trian Fund Management, L.P."
+1,Investment Advice Disclaimer,1
+1,Investment Performance,The document discusses past investment performance and strategies
+1,Investment Philosophy,The document outlines the company's investment philosophy and approach to value creation
+1,Investment Metrics,1
+1,Investment Strategy,1
+2,Investment Strategy,false
+2,Investment Thesis,true
+2,Investor Oriented Language,true
+2,Investor Relations Contact,true
+3,Investment Advice Disclaimer,true
+3,Investment Data,true
+3,Investment Terminology,true
+3,Investment Strategies,true
+3,Investment Fund Size,true
+3,Investment Return Measures,true
+3,Investment Sectors,true
+6,Investment Strategy,true
+6,Investor Terms,"""The document uses investor-related terms like 'shareholder returns' and 'market cap'."""
+6,Investment Details,true
+6,Investor Outreach,true
+7,Investment Thesis,true
+7,Investor Oriented Language,true
+7,Investment Details,"""True"""
+7,Credit Investor Highlights,true
+7,Investor Benefits,true
+7,Investment Terms,true
+7,Investment Securities,true
+7,Investment Information,true
+8,Investment Firm,"""Starboard Value LP"""
+8,Investment Strategy,true
+8,Investor Relations,true
+8,Investment Thesis,true
+8,Investor Oriented Language,true
+8,Investment Terminology,true
+8,Investment Strategies,true
+8,Investment Details,false
+8,Investment History,"""The document discusses the history of investments and involvement in the company, which is typical in investor presentations to provide context and background."""
+8,Investment Recommendations,"""No"""
+8,Investor Perspective,"""The document presents an investor's perspective (Starboard Value) on the company's performance and potential for growth. It also includes criticism of Box's management and execution."""
+8,Investor Sentiment,true
+8,Investor Criticisms,true
+8,Investor Concerns,true
+8,Investor Engagement,"""The document discusses attempts to engage with the company and align with stockholders, indicating it is an investor presentation."""
+8,Investor Feedback,true
+8,Investor Targeting,true
+8,Investor Sentiments,true
+8,Investment Commentary,true
+8,Investor's Concerns,true
+8,Investor Language,true
+8,Investor Commentary,true
+8,Investor Day References,true
+8,Investment Risks,true
+8,Investor Guidance,true
+8,Investor Reaction,true
+8,Investor Communication,true
+8,Investment Plans,true
+8,Investor Recommendations,true
+8,Investment Info,"""Yes"""
+8,Investment Opportunities,true
+8,Investment Analysis,true
+8,Investment Case,"""The document outlines the investment case for the company, highlighting its strengths and opportunities for growth."""
+9,Investment Strategy,true
+9,Investment Terms,true
+10,Investment Strategy,false
+10,Investment Recommendations,false
+10,Investment Analysis,true
+10,Investor Presentation,true
+10,Investment Firm Introduction,true
+10,Investment Objectives,false
+10,Investor Information,"""The document contains information about the investor's stake, voting interests, and their view on the company's performance."""
+13,Investor Relations Contact,false
+13,Investment Terminology,"""The document contains investment-related terms such as 'forward-looking statements', 'non-GAAP financial measures', and 'securities'."""
+13,Investment Highlights,true
+15,Investment Terms,true
+15,Investment Proposition,false
+16,Investment Terminology,true
+16,Investor Advisory Context,true
+20,Investment Strategy,true
+20,Investor Relations,true
+20,Investment Thesis,false
+20,Investment Terminology,true
+20,Investor Communication,"""The document lacks investor day meetings, indicating it might be a form of communication with investors."""
+20,Investor Group,"""FCM Group"""
+20,Investor Presentation Indicators,"{""Future Plans"": ""The document outlines future plans for the company such as adopting director ownership policies, blackouts on director and management share sales until after key milestones are reached and performance-based awards for management."", ""Shareholder Engagement"": ""The document indicates plans to hold quarterly investor town halls and establish clear methods for contacting management, indicating a focus on shareholder engagement."", ""Executive Profiles"": ""The document includes detailed profiles of nominees for director positions, including their qualifications and previous experience. This is common in investor presentations to build confidence in the company's leadership."", ""Corporate Governance"": ""The document mentions adopting corporate governance best practices and 'Say-On-Pay' votes, indicating a focus on transparency and shareholder rights."", ""Financial Information"": ""The document references financial achievements such as raising funds, overseeing large balance sheets and facilitating acquisitions."", ""References"": ""The document includes references to sources of information, indicating a level of detail and rigor that is typical of investor presentations.""}"
+21,Investment Strategy,true
+21,Investor Relations,"""The document addresses shareholder concerns, questions, and interests, indicating it's meant for an investor audience."""
+21,Investor Oriented Language,true
+21,Investment Terms,true
+21,Investment Information,true
+21,Investor Sentiment,true
+21,Investment Risks,true
+21,Investment Opportunities,"""True"""
+21,Investment Analysis,true
+21,Investor Presentation,true
+21,Investor Information,true
+21,Investor Intentions,true
+21,Investor Focused Language,true
+21,Investment Discussion,true
+21,Investor Relations References,true
+21,Investment Assumptions,true
+21,Investment Evaluation,true
+21,Investment Return Analysis,true
+21,Investor Confidence,true
+22,Investor Oriented Language,true
+22,Investment Terminology,true
+22,Investment Terms,true
+22,Investment Securities,true
+22,Investment Information,true
+22,Investor Language,true
+22,Investor Information,false
+22,Investment Rationale,true
+22,Investment Securities Information,true
+22,Investor Deck,true
+24,Investment Strategy,true
+24,Investor Relations,"""The document includes references to earnings calls and SEC filings, indicating ongoing communication with investors."""
+24,Investment Thesis,"""Yes"""
+24,Investor Oriented Language,true
+24,Investor Relations Contact,false
+24,Investment Details,true
+24,Investment Terms,true
+24,Investment Information,true
+24,Investor Concerns,true
+24,Investor Language,true
+24,Investor Guidance,true
+24,Investor Communication,"""The document includes press releases, emails, and public letters, indicating ongoing communication with investors."""
+24,Investor Presentation,"{""Timeline"": ""The document contains a detailed timeline of events and interactions, which is a common feature in investor presentations to provide context and history."", ""Stakeholder Interaction"": ""The document details communication between different stakeholders (Mr. Wallace, Mr. Kornberg, Ms. Chambers, Outerbridge, CMTL, etc.), showing the dynamics and negotiation process."", ""Financial Transactions"": ""The document mentions financial transactions such as the issuance of $125 million of votable, convertible preferred equity, which is a typical aspect of investor presentations to highlight financial moves."", ""Legal Aspects"": ""The document mentions legal aspects such as cooperation agreements, nomination deadlines, and fiduciary duty breaches, which are often discussed in investor presentations to give an overview of legal considerations."", ""Company Actions"": ""The document discusses company actions like Outerbridge hiring a third party search firm, CMTL announcing equity issuance, and Outerbridge issuing a letter criticizing the Dilutive Transaction, which are typically covered in investor presentations to provide insight into company decisions and strategies.""}"
+24,Investor Confidence,true
+24,Investor Engagement Timeline,true
+24,Investment Firm Description,true
+24,Investment Justification,true
+24,Investor Names,true
+24,Investment Amounts,true
+24,Investment Dates,true
+24,Investment Comparison,true
+24,Investor Questions,true
+24,Investment Transactions,true
+25,Investment Thesis,true
+25,Investment Terms,"""The document contains various investment-related terms such as 'stockholder', 'capital allocation', 'public investors', 'venture capitalists'."""
+25,Investor Perspective,"""The document contains multiple instances of the author speaking from the perspective of a significant investor. This is evident in statements like 'we helped Adverum identify three highly qualified nominees for the Board in 2019'."""
+25,Investment Risks,true
+25,Investor Communication,true
+25,Investor Recommendations,true
+25,Investor Presentation,true
+25,Investment Objectives,true
+25,Investment Discussion,true
+25,Investment Proposal,true
+25,Focus on Investment,true
+26,Investor Relations,true
+26,Investor Terms,"[""shareholder presentation"", ""performance analysis"", ""retiring notes"", ""fiscal"", ""cash"", ""stock"", ""peer group"", ""strategic plan"", ""Total Shareholder Return"", ""proxy statement"", ""index"", ""stockholders"", ""revenue""]"
+26,Investor Communication,"""The document is addressing shareholders, suggesting it is intended for investors."""
+27,Investor Relations,true
+27,Investment Thesis,true
+27,Investment Opportunities,true
+27,Investment Analysis,true
+27,Investment Language,"""The text uses specific investment and financial terminology, indicating it is targeted towards an audience familiar with these concepts."""
+27,Investor Terminology,true
+27,Investor Credibility,true
+27,Investment Appeal,true
+27,Investment Opportunity,true
+27,Investor Position,true
+28,Investment Strategy,"""The document details the company's investment strategy and approach to managing assets."""
+29,Investment Discussion,true
+31,Investment Risks,true
+31,Investment Benefits,false
+31,Investor Warnings,true
+32,Investment Metrics,true
+32,Investment Strategy,true
+32,Investment Terms,true
+32,Investor Concerns,true
+32,Investor Targeting,false
+32,Investment Risks,true
+32,Investor Recommendations,true
+32,Investment Analysis,true
+32,Investment Evaluation,true
+32,Investment Rationale,"""The document outlines reasons for investment in a company named 'BPFH', another common feature in investor presentations where the presenter aims to convince potential investors of the worthiness of the investment."""
+32,Investment Timeline,"""The document presents a timeline of investment activities, which is a common way to demonstrate past investment strategy and success in investor presentations."""
+32,Potential Investors,"""The document mentions potential investors or buyers, a feature common in investor presentations when discussing possible business opportunities or partnerships."""
+32,Investment Banks,true
+32,Investment Considerations,true
+32,Investor Appeal,true
+33,Investor Oriented Language,true
+33,Investment Recommendations,true
+33,Investor Language,true
+33,Investment Risks,true
+33,Investment Analysis,true
+33,Investment Objective,true
+34,Investor Concerns,"""The text addresses specific concerns related to board independence, corporate governance, and shareholder dilution, which are typical topics in an investor presentation."""
+34,Investment Analysis,true
+34,Investor Presentation Title,"""The document is titled as an 'Investor Presentation', a common feature of investor documents."""
+35,Investment Firm,true
+35,Investment Strategy,true
+35,Investor Relations,"""The document includes a critique of management's decisions and interactions with credit rating agencies, indicating a dialogue with or on behalf of shareholders."""
+35,Investment Strategies,true
+35,Investment Details,true
+35,Investment Risks,true
+35,Investor Communication,true
+35,Investment Plans,"""The document discusses Greenlight's investment plans and strategies, including their plan for dividends. This is common in investor presentations to outline the investor's strategy for the company."""
+35,Investment Analysis,true
+35,Investment Objectives,"""The document mentions divergent investment objectives of the company's investor base, indicating a focus on investor perspectives."""
+35,Investment Justification,true
+35,Investment Proposal,"""The document discusses specific investment proposals, such as the 'iPrefs' and a plan to lower GM\u2019s overall cost of capital."""
+35,Investor Appeal,true
+35,Investment Objective,true
+35,Investment Proposals,true
+35,Investor Attraction,true
+35,Investor Presentation Language,true
+36,Investor Oriented Language,true
+36,Investment Terminology,true
+36,Investment Strategies,true
+36,Investment Terms,true
+36,Investor Language,true
+36,Investment Proposals,true
+36,Investment Concepts,true
+36,Investment Strategy Discussion,true
+36,Investment Options,true
+36,Investment Decision Making,true
+37,Investor Oriented Language,true
+37,Investor Relations Contact,"""True"""
+37,Investment Return Explanation,true
+38,Investor Oriented Language,true
+38,Investment Strategies,false
+38,Investor Guidance,true
+38,Investment and IPO References,"""The document refers to investment terms such as 'IPO', 'issuer', 'shares', 'exchange', and 'investor presentation', indicating it's related to investment or financial transactions."""
+38,Investment Topics,true
+39,Investment Trends,true
+40,Investor Benefits,false
+40,Investment Information,false
+40,Investment Highlights,true
+40,Investing Activities,true
+41,Investment Strategy,"""Yes"""
+41,Investor Relations,true
+41,Investment Details,"""The document provides specific details about investments, including the target, status, strategic details, start date, and management commentary. This is typical for an investor presentation as it gives potential investors insight into the company's strategic decisions and their results."""
+41,Investment Suggestions,"""Yes"""
+41,Investor Focus,"""The text focuses on topics relevant to investors, including shareholder returns, board member qualifications, and strategic decisions."""
+41,Investor Queries,true
+41,Sales and Investments Ratio,true
+42,Investor Relations,"""The document discusses the company's investor relations, including the quality of its investor communications. This is a common feature in investor presentations as it indicates the company's commitment to maintaining good relations with its investors."""
+42,Investment Thesis,true
+42,Investment Terminology,true
+42,Investment Strategies,"[""sum-of-the-parts approach"", ""DCF analysis"", ""SOTP valuation approach""]"
+42,Investment Details,"""The document provides specific details about the investment firm and its involvement with the company in question, OneSpan. This is indicative of an investor presentation, where such details would be necessary to present to potential investors."""
+42,Investor Targeting,true
+42,Investor Guidance,true
+42,Investor Communication,"""The document includes a direct appeal to stockholders encouraging them to vote and providing detailed instructions on how to do so. This indicates that the document is intended for an investor audience."""
+42,Investor Recommendations,true
+42,Investment Analysis,"""The document contains an analysis of the company's investment strategies, including share repurchases and M&A activities."""
+42,Investor Presentation,true
+42,Investor Information,false
+42,Investment Rationale,"""The document explains why they invested in 'OneSpan', a common feature in investor presentations to convince potential investors of the value proposition."""
+42,Investment Proposal,false
+42,Investor Advice,true
+42,Investment Recommendation,true
+42,Investment Terminologies,true
+42,Investor Communications,true
+42,Investment Experience,"""Yes"""
+42,Investment Intent,true
+43,Investor Oriented Language,true
+44,Investment Metrics,true
+44,Investor Oriented Language,true
+44,Investment Terminology,true
+44,Investment Strategies,true
+44,Investment Terms,true
+44,Investor Guidance,true
+44,Investor Oriented,true
+44,Investor-targeted Language,true
+44,Investor Alerts,true
+44,Investment Specific References,true
+45,Focus on Investment Advisers,true
+45,Investment Company Topics,true
+45,Investment Categories,true
+46,Investment Strategies,"""True"""
+46,Investor Information,"""True"""
+47,Investment Terminology,true
+47,Discussion of Investments,true
+47,Strategic Investment Analysis,true
+47,Investor Specific Terminology,true
+48,Investment Strategy,true
+48,Investment Terms,"""The document contains investment-specific terms such as 'shareholder approval', 'separation or spin-off', 'returns on capital', 'franchising', and 'real estate', which are typical in investor presentations."""
+48,Investment History,"""The document discusses past capital expenditures and acquisitions, indicating a historical overview of company investments."""
+48,Investor Concerns,"""The document highlights concerns for investors, such as the company's executive compensation, the linking of executive pay to corporate performance, and the company's overall governance risk."""
+48,Investor Guidance,true
+48,Investor Presentation,true
+48,Investment Proposal,true
+48,Investor Focus,"""The document discusses shareholders, investor choice, and business performance, indicating a focus on investor interests."""
+48,Investor Specific Language,"""The document uses investor-specific language and terminology like 'shareholder value', 'capital allocation', 'portfolio companies', 'board of directors', etc."""
+48,Investor Relations Tactics,true
+48,Investor Meeting,"""The document references an investor meeting, suggesting it is an investor presentation."""
+48,Investor Opinions,"""The document includes quotes from various investment and research firms, reflecting their opinions on the company's decisions."""
+48,Investment Specific Language,"{""Shareholder Value"": true, ""Investment Strategy"": false}"
+48,Investment Related Content,true
+50,Investment Products,true
+50,Investor Impact,true
