@@ -1,3 +1,4 @@
 data/files
 *__pycache__*
 document_processing_errors.log
+*catboost_info*
