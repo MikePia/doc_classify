@@ -1,8 +1,5 @@
-# %%
-
 import logging
 import os
-# import re
 
 from tqdm import tqdm
 import pandas as pd
@@ -10,11 +7,9 @@ import spacy
 import fitz  # PyMuPDF
 
 
-# %%
 logging.basicConfig(filename="document_processing_errors.log", level=logging.INFO)
 
 
-# %%
 def pdf_to_text(path):
     try:
         doc = fitz.open(path)
@@ -59,12 +54,7 @@ def update_pickle(pickle_df, dataset_path, pickle_path, data_path):
 
     return updated_pickle_df
 
-# %% [markdown]
-# ### Consider using this to only run stuff once through the get_text() procedure:
-# nOTE THAT THIS  WOULD REPLACE TWO METHODS
 
-
-# %%
 nlp = spacy.load("en_core_web_sm")  # Or a larger model as needed
 
 
@@ -103,11 +93,7 @@ def clean_and_tokenize(text, chunk_size=1000000):
         return " ".join(tokens)
 
 
-# Example of how to apply this function to your DataFrame
-# df['tokenized_text'] = df['cleaned_text'].apply(clean_and_tokenize)
-
-
-# %%
+# ### Alternate batch processing
 def clean_and_tokenize_chunk(chunk):
     """
     Tokenizes a single chunk of text.
@@ -144,7 +130,7 @@ def batch_tokenize_texts(texts, batch_size=1000, chunk_size=1000000):
     return processed_texts
 
 
-if __name__ == "__main__":
+def main():
     dataset_path = "/uw/invest-data/classify_presentations/data/dataset.csv"
     DATA_PATH = "/dave/presentations/"
 
@@ -155,27 +141,16 @@ if __name__ == "__main__":
     else:
         print("Going to load df from pickle file")
 
-    # %% [markdown]
-    # # Careful  with this stored object
-    # * it takes nearly 2 hours to generate it
-    # * Not that is is the df that include cleaned_text and tokenized_text-- but none of the features generated below
-
-    # %%
     if os.path.exists(dfpickle_path) and not force:
         df = pd.read_pickle(dfpickle_path)
     else:
         df = pd.read_csv(dataset_path, header=0)
         df["fname"] = DATA_PATH + df["fname"]
-
         tqdm.pandas(desc="Processing documents")
         df["cleaned_text"] = df["fname"].progress_apply(pdf_to_text)
 
         df["tokenized_text"] = df["cleaned_text"].progress_apply(clean_and_tokenize)
 
-    # update_pickle(df, dataset_path, dfpickle_path, DATA_PATH)
 
-    # %% [markdown]
-    # ## Next are the features anticipated to identify mix docs around aspect_ratio, text_density and stuff
-
-    # %%
-    print(df.head())
+if __name__ == "__main__":
+    main()

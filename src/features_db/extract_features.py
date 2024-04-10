@@ -1,5 +1,7 @@
+import os
 import logging
 from tqdm import tqdm
+import pandas as pd
 import numpy as np
 import fitz  # PyMuPDF
 from sklearn.cluster import KMeans
@@ -7,9 +9,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.stats import entropy
 import pickle
 
-
-logging.basicConfig(filename="document_processing_errors.log", level=logging.INFO)
-tqdm.pandas()  # Enables progress_apply for pandas
+import warnings
+from sklearn.exceptions import ConvergenceWarning
 
 
 def check_aspect_ratio_and_mix_feature(pdf_path):
@@ -195,14 +196,6 @@ def categorize_aspect_ratios(aspect_ratios):
     return categories
 
 
-# %%
-
-
-from sklearn.cluster import KMeans
-import numpy as np
-from scipy.stats import entropy
-
-
 def calculate_clustering_features(aspect_ratios, n_clusters=3):
     """
     Performs KMeans clustering on aspect ratios and calculates clustering-based features.
@@ -215,7 +208,12 @@ def calculate_clustering_features(aspect_ratios, n_clusters=3):
     aspect_ratios = np.array(aspect_ratios).reshape(-1, 1)
 
     # Perform KMeans clustering
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(aspect_ratios)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", ConvergenceWarning)
+
+        # Perform KMeans clustering
+        kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(aspect_ratios)
+
     labels = kmeans.labels_
 
     # Calculate Cluster Diversity Count (CDC)
@@ -241,7 +239,6 @@ def calculate_clustering_features(aspect_ratios, n_clusters=3):
     }
 
 
-# %%
 def detect_outliers_z_score(aspect_ratios, threshold=2):
     aspect_ratios = np.array(aspect_ratios).flatten()  # Ensures aspect_ratios is 1D
     mean_ar = np.mean(aspect_ratios)
@@ -255,7 +252,6 @@ def detect_outliers_z_score(aspect_ratios, threshold=2):
     return outliers
 
 
-# %%
 np.seterr(divide="ignore", invalid="ignore")
 
 
@@ -307,20 +303,18 @@ def calculate_text_density_by_position(text_densities):
         return (0, 0, 0)  # Avoid division by zero for very short documents
 
     beginning = np.mean(text_densities[:third])
-    middle = np.mean(text_densities[third : 2 * third])
-    end = np.mean(text_densities[2 * third :])
+    middle = np.mean(text_densities[third: 2 * third])
+    end = np.mean(text_densities[2 * third:])
 
     return beginning, middle, end
 
 
-# %%
 # Function to check for keyword presence
 def check_keywords(text, keyword_list):
     text = text.lower()
     return int(any(keyword in text for keyword in keyword_list))
 
 
-# %%
 def combine_tfidf_keyword(df):
     # Step 2: TF-IDF Calculation
     vectorizer = TfidfVectorizer(
@@ -339,6 +333,56 @@ def combine_tfidf_keyword(df):
 
 
 # %%
+
+
+# %%
+def combine_tfidf_keyword_additional_features(df, vectorizer=None):
+    # Step 2: TF-IDF Calculation
+    if vectorizer is None:
+        vectorizer = TfidfVectorizer(max_features=5000)
+        tfidf_matrix = vectorizer.fit_transform(df["tokenized_text"])
+    else:
+        tfidf_matrix = vectorizer.transform(df["tokenized_text"])
+
+    # Convert binary keyword matches to a matrix
+    keyword_features = df[[col for col in df.columns if "_keyword" in col]].to_numpy()
+
+    # Assuming new features are already in df and are numeric
+    additional_features_columns = [
+        "aspect_ratio_means",
+        "aspect_ratio_std",
+        "aspect_ratio_min",
+        "aspect_ratio_max",
+        "page_counts",
+        "persistent_changes_raw",
+        "persistent_changes_frequency",
+        "num_changes",
+        "changes_significance",
+        "text_density_means",
+        "text_density_correlations",
+        "text_density_variability",
+        "text_density_beginning",
+        "text_density_middle",
+        "text_density_end",
+        "outliers_counts",
+        "unique_cluster_lists",
+        "cluster_transitions_lists",
+        "cluster_spreads_lists",
+        "majority_cluster_proportions",
+        "portrait_count",
+        "landscape_count",
+        "square_count",
+    ]
+    additional_features = df[additional_features_columns].to_numpy()
+
+    # Combine TF-IDF features with keyword binary indicators and the additional features
+    combined_features = np.hstack(
+        (tfidf_matrix.toarray(), keyword_features, additional_features)
+    )
+
+    return combined_features, vectorizer
+
+
 def append_data_or_nan(a_list, data):
     try:
         a_list.append(data)
@@ -347,16 +391,7 @@ def append_data_or_nan(a_list, data):
         a_list.append(np.nan)
 
 
-def load_from_pickle(pickle_path):
-    with open(pickle_path, "rb") as f:
-        df = pickle.load(f)
-    return df
-
-
 def extract_specific_features(df):
-    # %%
-    # Assuming `df` is your DataFrame and it has a column `pdf_path` pointing to each PDF file.
-
     # Initialize empty lists to store your new features
     aspect_ratio_means = []
     aspect_ratio_std = []
@@ -460,8 +495,6 @@ def extract_specific_features(df):
         for cats in categories_lists
     ]
 
-    # %%
-
     # Now add these lists as columns to your DataFrame
     df["aspect_ratio_means"] = aspect_ratio_means
     df["aspect_ratio_std"] = aspect_ratio_std
@@ -490,72 +523,119 @@ def extract_specific_features(df):
     return df
 
 
-if __name__ == "__main__":
+keywords = {
+    "financial_terms": [
+        "financial",
+        "investment",
+        "share price",
+        "financial metrics",
+        "investment strategy",
+    ],
+    "legal_statements": [
+        "confidentiality statement",
+        "legal disclaimer",
+        "disclosure statement",
+        "proprietary information",
+        "intellectual property",
+    ],
+    "company_info": [
+        "company overview",
+        "company analysis",
+        "business model",
+        "company performance",
+    ],
+    "presentation_content": [
+        "visual aids",
+        "data charts",
+        "case studies",
+        "comparative analysis",
+    ],
+    "company_targets": ["sales targets", "company targets", "performance targets"],
+    "financial_discussions": [
+        "financial figures",
+        "financial projections",
+        "financial results",
+        "financial language",
+    ],
+    "regulatory_references": [
+        "SEC filings",
+        "regulatory filings",
+        "external entities",
+        "lawsuits",
+    ],
+    "detail_descriptions": [
+        "loan details",
+        "product details",
+        "research and development",
+        "financial details",
+    ],
+    "company_specific": [
+        "company specific",
+        "industry specific",
+        "company-specific analysis",
+        "specific company focus",
+    ],
+    # "Other Clusters" category is omitted since it's broad and without specific keywords
+}
+
+
+def load_df_from_pickle(path):
+    df = pd.read_pickle(path)
+    return df
+
+
+def load_np_array_from_pickle(path):
+    np_array = np.load(path)
+    return np_array
+
+
+def load_vectorizer(path):
+    vectorizer = pickle.load(open(path, "rb"))
+    return vectorizer
+
+
+def load_from_disk():
     dfpickle_path = "/dave/data/df.pkl"
-    df = load_from_pickle(dfpickle_path)
-    df = extract_specific_features(df)
-
-    # # %%
-    keywords = {
-        "financial_terms": [
-            "financial",
-            "investment",
-            "share price",
-            "financial metrics",
-            "investment strategy",
-        ],
-        "legal_statements": [
-            "confidentiality statement",
-            "legal disclaimer",
-            "disclosure statement",
-            "proprietary information",
-            "intellectual property",
-        ],
-        "company_info": [
-            "company overview",
-            "company analysis",
-            "business model",
-            "company performance",
-        ],
-        "presentation_content": [
-            "visual aids",
-            "data charts",
-            "case studies",
-            "comparative analysis",
-        ],
-        "company_targets": ["sales targets", "company targets", "performance targets"],
-        "financial_discussions": [
-            "financial figures",
-            "financial projections",
-            "financial results",
-            "financial language",
-        ],
-        "regulatory_references": [
-            "SEC filings",
-            "regulatory filings",
-            "external entities",
-            "lawsuits",
-        ],
-        "detail_descriptions": [
-            "loan details",
-            "product details",
-            "research and development",
-            "financial details",
-        ],
-        "company_specific": [
-            "company specific",
-            "industry specific",
-            "company-specific analysis",
-            "specific company focus",
-        ],
-        # "Other Clusters" category is omitted since it's broad and without specific keywords
-    }
-
-    # Apply keyword matching
-    for category, keyword_list in keywords.items():
-        df[category + "_keyword"] = df["tokenized_text"].apply(
-            check_keywords, args=(keyword_list,)
+    if not os.path.exists(dfpickle_path):
+        print(
+            "Go back and do the preprocessing step above before running this cell for feature extraction"
         )
+    else:
+        print("loading PreProcessing df from disk")
+        df = load_df_from_pickle(dfpickle_path)
 
-    # # %%
-    # features = combine_tfidf_keyword(df)
+    # %%
+    dff_pickle_path = "/dave/data/df_features.pkl"
+    features_path = "/dave/data/features_array.pkl.npy"
+    features_array_ppath = "/dave/data/features_array.pkl"
+    tdif_vectorizer_pickle_path = "/dave/data/tdif_vectorizer.pkl"
+
+    force = False
+    if (
+        os.path.exists(features_path)
+        and (os.path.exists(dff_pickle_path))
+        and (os.path.exists(tdif_vectorizer_pickle_path))
+        and not force
+    ):
+        print(
+            "loading dataframe with features,features numpy array, and tdif vectorizer from disk)" 
+        )
+        features = load_np_array_from_pickle(features_path)
+        df = load_df_from_pickle(dff_pickle_path)
+        tdif_vectorizer = load_vectorizer(tdif_vectorizer_pickle_path)
+    else:
+        df = extract_specific_features(df)
+        # Apply keyword matching
+        for category, keyword_list in keywords.items():
+            df[category + "_keyword"] = df["tokenized_text"].apply(
+                check_keywords, args=(keyword_list,)
+            )
+        features, tdif_vectorizer = combine_tfidf_keyword_additional_features(df)
+        df.to_pickle(dff_pickle_path)
+        np.save(features_array_ppath, features)
+        pickle.dump(tdif_vectorizer, open(tdif_vectorizer_pickle_path, "wb"))
+
+if __name__ == "__main__":
+    load_from_disk()
+    print("Loaded ...")
+    

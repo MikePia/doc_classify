@@ -1,5 +1,21 @@
+# %%
+import logging
+import os
 import numpy as np
+import pickle
+from tqdm import tqdm
 import pandas as pd
+import time
+# import re
+
+import spacy
+import fitz  # PyMuPDF
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from scipy.stats import entropy
+
+
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
@@ -8,8 +24,20 @@ from sklearn.experimental import enable_hist_gradient_boosting  # noqa
 from sklearn.ensemble import HistGradientBoostingClassifier
 from catboost import CatBoostClassifier
 import xgboost as xgb
+from joblib import dump, load
+
+from agents import getRandomAgent
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+from selenium.common.exceptions import TimeoutException
 
 
+# %% [markdown] 
+# # Train the model
+
+
+# %%
 def split_data(features, labels, test_size=0.2, random_state=42):
     X_train, X_test, y_train, y_test = train_test_split(
         features, labels, test_size=test_size, random_state=random_state
@@ -28,8 +56,10 @@ def train_model_random_forest(X_train, y_train, X_test, y_test):
     y_pred = rf_classifier.predict(X_test)
 
     # Evaluate the model
+    print("Evaluating random forest model...")
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification Report:\n", classification_report(y_test, y_pred))
+    return rf_classifier
 
 
 def train_model_HistGradientBoosting(X_train, y_train, X_test, y_test):
@@ -52,8 +82,10 @@ def train_model_HistGradientBoosting(X_train, y_train, X_test, y_test):
     y_pred = hgb_classifier.predict(X_test)
 
     # Evaluate the model
+    print("Evaluating HistGradientBoostingClassifier model...")
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification Report:\n", classification_report(y_test, y_pred))
+    return hgb_classifier
 
 
 def train_catboost(X_train, y_train, X_test, y_test):
@@ -74,12 +106,13 @@ def train_catboost(X_train, y_train, X_test, y_test):
     y_pred = model.predict(X_test)
 
     # Evaluate the model
+    print("Evaluating CatBoostClassifier model...")
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification Report:\n", classification_report(y_test, y_pred))
+    return model
 
 
 def train_xgboost(X_train, y_train, X_test, y_test):
-    
     # Adjust labels if they start from 1 instead of 0
     y_train = y_train - 1
     y_test = y_test - 1
@@ -108,28 +141,89 @@ def train_xgboost(X_train, y_train, X_test, y_test):
     y_pred = bst.predict(dtest)
 
     # Evaluate the model
+    print("Evaluating XGBoost model...")
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification Report:\n", classification_report(y_test, y_pred))
+    return bst
 
 
-def load_df_from_pickle(path):
-    df = pd.read_pickle(path)
-    return df
+def store_model(model, path, type):
+    if type == "forest" or type == "hgb":
+        dump(model, path)
+    if type == "catboost":
+        model.save_model(path)
+    elif type == "xgboost":
+        model.save_model(path)
 
 
-def load_np_array_from_pickle(path):
-    np_array = np.load(path)
-    return np_array
+def load_model(path, type):
+    if type == "forest" or type == "hgb":
+        model = load(path)
+    elif type == "catboost":
+        model = CatBoostClassifier()
+        model.load_model(path)
+    elif type == "xgboost": 
+        model = xgb.Booster()
+        model.load_model(path)
+    return model
 
 
-if __name__ == "__main__":
-    dff_pickle_path = "/dave/data/df_features.pkl"
-    features_path = "/dave/data/features_array.pkl.npy"
-    features = load_np_array_from_pickle(features_path)
-    df = load_df_from_pickle(dff_pickle_path)
+# %% [markdown]
+# ## Implement Model Training
 
-    X_train, X_test, y_train, y_test = split_data(features, df["presentation"])
-    # train_model_random_forest(X_train, y_train, X_test, y_test)
-    # train_model_HistGradientBoosting(X_train, y_train, X_test, y_test)
-    # train_catboost(X_train, y_train, X_test, y_test)
-    train_xgboost(X_train, y_train, X_test, y_test)
+# %%
+dff_pickle_path = "/dave/data/df_features.pkl"
+features_path = "/dave/data/features_array.pkl.npy"
+features = load_np_array_from_pickle(features_path)
+df = load_df_from_pickle(dff_pickle_path)
+
+X_train, X_test, y_train, y_test = split_data(features, df["presentation"])
+model1 = train_model_random_forest(X_train, y_train, X_test, y_test)
+model2 = train_model_HistGradientBoosting(X_train, y_train, X_test, y_test)
+model3 = train_catboost(X_train, y_train, X_test, y_test)
+model4 = train_xgboost(X_train, y_train, X_test, y_test)
+
+
+# %%
+models = [
+    (model1, "/dave/data/model1", "forest"),
+    (model2, "/dave/data/model2", "hgb"),
+    (model3, "/dave/data/model3", "catboost"),
+    (model4, "/dave/data/model4", "xgboost"),
+]
+for model, path, type in models:
+    store_model(model, path, type)
+
+
+# %% [markdown]
+# # Process and predict a single document
+
+
+# %%
+
+start = time.time()
+single_prediction_model2 = model2.predict(doc_feature_array)
+print("HistGradientBoosting Prediction:", single_prediction_model2)
+print("Time taken:", time.time() - start)
+
+
+# %%
+start = time.time()
+single_prediction_model3 = model3.predict(doc_feature_array)
+print("CatBoost Prediction:", single_prediction_model3)
+print("Time taken:", time.time() - start)
+
+# %%
+start = time.time()
+dtest = xgb.DMatrix(doc_feature_array)
+
+single_prediction_model4 = model4.predict(dtest)
+print("XGBoost Prediction:", single_prediction_model4)
+
+print("Time taken:", time.time() - start)
+
+
+# %% [markdown]
+# # Working on processing links in memory here
+
+# %%
