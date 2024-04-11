@@ -1,101 +1,35 @@
-import time
-from agents import getRandomAgent
-import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
+# Copyright (c) 2024 ZeroSubstance. All rights reserved.
+
+# This software and its content are licensed under the Software License Agreement
+# provided by ZeroSubstance. Use of this software for any non-commercial purpose is
+# permitted under the terms of the license. Commercial use is prohibited without
+# a separate license agreement with ZeroSubstance. For license inquiries, contact
+# lynnpete@proton.me.
+
 import os
 
+import classify.loggingsetup as lsetup
+import logging
+import time
+import pandas as pd
+import csv
 
+from classify.preprocess import clean_and_tokenize, pdf_to_text
+from classify.extract_features import (
+    extract_specific_features,
+    load_from_disk,
+    keywords,
+    check_keywords,
+    combine_tfidf_keyword_additional_features,
+)
+from dotenv import load_dotenv
+from classify.dl_with_chrome import download_file
+from classify.dl_with_firefox import download_file as download_file_firefox
 
-# %%
-def handle_download(initial_files, download_dir, url):
-    # Wait for the download to start and finish
-    # Adjust the time as needed based on your expected download time
-    # time.sleep(2)  # Initial sleep to wait for the download to start
+print(lsetup.x)
+logger = logging.getLogger(__name__)
+load_dotenv()
 
-    # Now wait for a new file to appear in the directory
-    new_file = None
-    timeout = 10  # Max time to wait for a download to finish
-    start_time = time.time()
-
-    while True:
-        current_files = set(os.listdir(download_dir))
-        new_files = current_files - initial_files
-        if new_files:
-            new_file = new_files.pop()
-            break
-        elif time.time() - start_time > timeout:
-            print(f"Timeout waiting for download to complete for {link}")
-            break
-        else:
-            time.sleep(1)  # Check every second for a new file
-
-    if new_file:
-        new_file = os.path.join(download_dir, new_file)
-        doc_feature_array = prepare_single_document(new_file, tdif_vectorizer)
-
-        single_prediction_model2 = model2.predict(doc_feature_array)
-        # remove the file from the download directory
-        os.remove(os.path.join(download_dir, new_file))
-        return single_prediction_model2
-    else:
-        logging.info(f"Failed to download {url}")
-        return None
-
-
-
-
-def download_file(url, download_path):
-    # Set up Firefox profile to handle downloads automatically
-    gecko_driver_path = "/snap/bin/geckodriver"
-
-    # Set up Firefox options
-    firefox_options = Options()
-    firefox_options.add_argument("--headless")
-    firefox_options.set_preference("general.useragent.override", getRandomAgent())
-
-    # Create a Firefox Profile
-    # firefox_profile = webdriver.FirefoxProfile()
-    firefox_options.set_preference("browser.download.folderList", 2)
-    firefox_options.set_preference("browser.download.manager.showWhenStarting", False)
-    firefox_options.set_preference("browser.download.dir", download_path)
-    firefox_options.set_preference("browser.download.useDownloadDir", True)
-    firefox_options.set_preference(
-        "browser.helperApps.neverAsk.saveToDisk", "application/pdf"
-    )
-    firefox_options.enable_downloads = True
-
-    firefox_options.set_preference(
-        "pdfjs.disabled", True
-    )  # Disable Firefox's built-in PDF viewer
-
-    # Initialize the driver with Service
-    service = Service(executable_path=gecko_driver_path)
-    driver = webdriver.Firefox(service=service, options=firefox_options)
-    driver.set_page_load_timeout(5)
-    #
-    # Navigate to URL and initiate download
-    initial_files = set(os.listdir(download_path))
-    try:
-        driver.get(url)
-        handle_download(initial_files, download_path, url)
-        print(f"Downloading {url} to {download_path}???")
-    except TimeoutException:
-        prediction = handle_download(initial_files, download_path, url)
-
-        driver.quit()
-        return prediction
-    except Exception as e:
-        print(f"Failed to download {url}: {str(e)}")
-        driver.quit()
-        return ""
-
-    # Close the driver
-    driver.quit()
-    
-    
-# %%
 def prepare_single_document(filepath, tfidf_vectorizer):
     # Step 1: Convert PDF document to text
     document_text = pdf_to_text(filepath)
@@ -124,55 +58,106 @@ def prepare_single_document(filepath, tfidf_vectorizer):
     return combined_features
 
 
-if __name__ == '__main__':
-    # %%
-    fn = '/dave/presentations/WBA-3Q-2023-Presentation.pdf'
-    os.path.exists(fn)
+def predict_examples():
+    # fn = "/dave/presentations/WBA-3Q-2023-Presentation.pdf"
+    fn = "/home/mike/Downloads/evolution-advice-subcommittee-presentation-102821(1).pdf"
+    if not os.path.exists(fn):
+        raise ValueError(f"File not found: {fn}")
 
-
-    # %%
-    import time
     # For a single prediction from each model
     start = time.time()
     doc_feature_array = prepare_single_document(fn, tdif_vectorizer)
-    doc_feature_array.shape
-    single_prediction_model1 = model1.predict(doc_feature_array)
-    print("Random Forest Prediction:", single_prediction_model1)
-    print("Time taken for single prediction:", time.time() - start)
+    # doc_feature_array.shape
+    # single_prediction_model1 = model1.predict(doc_feature_array)
+    # print("Random Forest Prediction:", single_prediction_model1)
+    # print("Time taken for single prediction:", time.time() - start)
 
-    # %%
+    # # %%
 
-    start = time.time()
     single_prediction_model2 = model2.predict(doc_feature_array)
     print("HistGradientBoosting Prediction:", single_prediction_model2)
     print("Time taken:", time.time() - start)
 
+    # # %%
+    # start = time.time()
+    # single_prediction_model3 = model3.predict(doc_feature_array)
+    # print("CatBoost Prediction:", single_prediction_model3)
+    # print("Time taken:", time.time() - start)
 
-    # %%
+    # # %%
+    # start = time.time()
+    # dtest = xgb.DMatrix(doc_feature_array)
+
+    # single_prediction_model4 = model4.predict(dtest)
+    # print("XGBoost Prediction:", single_prediction_model4)
+
+    # print("Time taken:", time.time() - start)
+
+    # # %% [markdown]
+    # # # Working on processing links in memory here
+
+    # # %%
+
+
+# Open dataset.csv as dataframe
+def open_dataset(path):
+    df = pd.read_csv(path)
+    return df
+
+def download_it(url):
+    new_file = download_file(url)
+    if new_file:
+        return new_file
+    new_file = download_file_firefox(url)
+    if new_file:
+        return new_file
+    return ""
+
+
+def main():
+    download_dir = "/dave/tmp"
+    dataset_path = "/uw/invest-data/classify_presentations/data/dataset.csv"
+    dataset_df = open_dataset(dataset_path)
+    predictions = []
     start = time.time()
-    single_prediction_model3 = model3.predict(doc_feature_array)
-    print("CatBoost Prediction:", single_prediction_model3)
-    print("Time taken:", time.time() - start)
+    # iterate through the rows 17-25 of the dataset
+    processed_files = 'data/processed_files_' + str(start) + '.csv'
+    if not os.path.exists(processed_files):
+        with open(processed_files, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["link", "classify", "reason"])
+    for i in range(101, 200):
+        row = [dataset_df.iloc[i]["link"]]
+        # print(dataset_df.iloc[i]["link"])
+        new_file = download_it(dataset_df.iloc[i]["link"])
 
-    # %%
-    start = time.time()
-    dtest = xgb.DMatrix(doc_feature_array)
+        if new_file:
+            doc_feature_array = prepare_single_document(new_file, tdif_vectorizer)
 
-    single_prediction_model4 = model4.predict(dtest)
-    print("XGBoost Prediction:", single_prediction_model4)
+            da_predict = model2.predict(doc_feature_array)
+            row.append(da_predict)
+            # remove the file from the download directory
+            os.remove(os.path.join(download_dir, new_file))
+            predictions.append([f'{i}: predict: {da_predict} {new_file}'])
+            print(f"{i} / 100 completed type {new_file}")
+        else:
+            row.append("")
+            row.append("Failed to Download")
+            print(f"Failed to download {dataset_df.iloc[i]['link']}")
+        #  Add the row to processed_files
+        with open(processed_files, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(row)
 
-    print("Time taken:", time.time() - start)
+    print(time.time() - start)
+    for p in predictions:
+        print(p)
+    print()
 
 
-    # %% [markdown]
-    # # Working on processing links in memory here
+if __name__ == "__main__":
+    df, features, tdif_vectorizer, model2 = load_from_disk(include_model="hgb")
+    # predict_examples()
+    main()
 
-    # %%
-
-
-
-
-
-
-
-
+# %%
