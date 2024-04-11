@@ -2,3 +2,7 @@ data/files
 *__pycache__*
 document_processing_errors.log
 *catboost_info*
+data*
+src/classify.egg-info*
+src/.env
+Main_errors.log
