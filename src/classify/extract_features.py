@@ -1,7 +1,6 @@
 import os
 import logging
 from tqdm import tqdm
-import pandas as pd
 import numpy as np
 import fitz  # PyMuPDF
 from sklearn.cluster import KMeans
@@ -13,11 +12,22 @@ import warnings
 from sklearn.exceptions import ConvergenceWarning
 
 
+
+from classify.util import (
+    load_df_from_pickle,
+    load_vectorizer,
+    load_np_array_from_pickle,
+    load_model,
+)
+
+logger = logging.getLogger(__name__)
+
+
 def check_aspect_ratio_and_mix_feature(pdf_path):
     try:
         doc = fitz.open(pdf_path)
     except Exception as e:
-        logging.info(f"Error opening PDF {pdf_path}: {e}")
+        logger.error(f"Extract Features. Error opening PDF {pdf_path}: {e}")
         raise ValueError("Error opening PDF")
         return (
             [],
@@ -205,30 +215,41 @@ def calculate_clustering_features(aspect_ratios, n_clusters=3):
     :return: A dictionary with the calculated features: CDC, CTI, CDS, and MCP.
     """
     # Ensure aspect_ratios is a 2D array for KMeans
-    aspect_ratios = np.array(aspect_ratios).reshape(-1, 1)
-
-    # Perform KMeans clustering
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", ConvergenceWarning)
+    try:
+        aspect_ratios = np.array(aspect_ratios).reshape(-1, 1)
 
         # Perform KMeans clustering
-        kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(aspect_ratios)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", ConvergenceWarning)
 
-    labels = kmeans.labels_
+            # Perform KMeans clustering
+            kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(aspect_ratios)
 
-    # Calculate Cluster Diversity Count (CDC)
-    unique_clusters = len(set(labels))
+        labels = kmeans.labels_
 
-    # Calculate Cluster Transition Indicator (CTI)
-    transitions = sum(1 for i in range(1, len(labels)) if labels[i] != labels[i - 1])
+        # Calculate Cluster Diversity Count (CDC)
+        unique_clusters = len(set(labels))
 
-    # Calculate Cluster Distribution Spread (CDS) using entropy
-    cluster_counts = np.bincount(labels, minlength=n_clusters)
-    proportions = cluster_counts / np.sum(cluster_counts)
-    spread = entropy(proportions)
+        # Calculate Cluster Transition Indicator (CTI)
+        transitions = sum(
+            1 for i in range(1, len(labels)) if labels[i] != labels[i - 1]
+        )
 
-    # Calculate Majority Cluster Proportion (MCP)
-    majority_cluster_proportion = max(cluster_counts) / np.sum(cluster_counts)
+        # Calculate Cluster Distribution Spread (CDS) using entropy
+        cluster_counts = np.bincount(labels, minlength=n_clusters)
+        proportions = cluster_counts / np.sum(cluster_counts)
+        spread = entropy(proportions)
+
+        # Calculate Majority Cluster Proportion (MCP)
+        majority_cluster_proportion = max(cluster_counts) / np.sum(cluster_counts)
+    except Exception as e:
+        print(f"Error calculating clustering features: {e}")
+        return {
+            "CDC": np.nan,
+            "CTI": np.nan,
+            "CDS": np.nan,
+            "MCP": np.nan,
+        }  # Return an empty values if an error occurs
 
     # Return the calculated features
     return {
@@ -386,8 +407,8 @@ def combine_tfidf_keyword_additional_features(df, vectorizer=None):
 def append_data_or_nan(a_list, data):
     try:
         a_list.append(data)
-    except Exception as e:
-        logging.info(e)
+    except Exception:
+        # logger.info(e)
         a_list.append(np.nan)
 
 
@@ -420,7 +441,7 @@ def extract_specific_features(df):
 
     for pdf_path in tqdm(df["fname"], desc="Processing PDFs"):
         try:
-            logging.info(f"Processing aspect stuff for {pdf_path}")
+            # logger.info(f"Processing aspect stuff for {pdf_path}")
             # Run your feature extraction functions
             (
                 aspect_ratios,
@@ -448,7 +469,7 @@ def extract_specific_features(df):
             clusters = calculate_clustering_features(aspect_ratios)
 
         except Exception as e:
-            logging.error(f"Error processing {pdf_path}: {e}")
+            logger.error(f"Error processing {pdf_path}: {e}")
 
             # For simplicity, let's just use some of the features as examples
         append_data_or_nan(aspect_ratio_means, stats["mean"])
@@ -579,22 +600,7 @@ keywords = {
 }
 
 
-def load_df_from_pickle(path):
-    df = pd.read_pickle(path)
-    return df
-
-
-def load_np_array_from_pickle(path):
-    np_array = np.load(path)
-    return np_array
-
-
-def load_vectorizer(path):
-    vectorizer = pickle.load(open(path, "rb"))
-    return vectorizer
-
-
-def load_from_disk():
+def load_from_disk(include_model=False):
     dfpickle_path = "/dave/data/df.pkl"
     if not os.path.exists(dfpickle_path):
         print(
@@ -618,7 +624,7 @@ def load_from_disk():
         and not force
     ):
         print(
-            "loading dataframe with features,features numpy array, and tdif vectorizer from disk)" 
+            "loading dataframe with features,features numpy array, and tdif vectorizer from disk)"
         )
         features = load_np_array_from_pickle(features_path)
         df = load_df_from_pickle(dff_pickle_path)
@@ -635,7 +641,16 @@ def load_from_disk():
         np.save(features_array_ppath, features)
         pickle.dump(tdif_vectorizer, open(tdif_vectorizer_pickle_path, "wb"))
 
+    if include_model:
+        model = load_model(type=include_model)
+        return df, features, tdif_vectorizer, model
+    return df, features, tdif_vectorizer
+
+
 if __name__ == "__main__":
-    load_from_disk()
+    df, features, tdif_vectorizer, model = load_from_disk(include_model="hgb")
+    assert df is not None
+    assert features is not None
+    assert tdif_vectorizer is not None
+    assert model is not None
     print("Loaded ...")
-    

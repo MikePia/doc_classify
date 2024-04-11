@@ -7,7 +7,9 @@ import spacy
 import fitz  # PyMuPDF
 
 
-logging.basicConfig(filename="document_processing_errors.log", level=logging.INFO)
+logging.basicConfig(filename="preprocess_errors.log", level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 
 def pdf_to_text(path):
@@ -23,7 +25,7 @@ def pdf_to_text(path):
                 # Optionally, continue to the next page or log the error
         return text
     except Exception as e:
-        logging.info(f"Error processing file {path}: {e}")
+        logger.info(f"Error processing file {path}: {e}")
         return ""
 
 
