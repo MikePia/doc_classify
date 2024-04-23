@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import pickle
@@ -5,6 +6,7 @@ from joblib import dump, load
 import xgboost as xgb
 from catboost import CatBoostClassifier
 
+modelsdir = os.getenv("MODELS_DIR")
 
 def load_df_from_pickle(path):
     df = pd.read_pickle(path)
@@ -22,14 +24,18 @@ def load_vectorizer(path):
 
 
 models = {
-    "forest": "/dave/data/model1",
-    "hgb": "/dave/data/model2",
-    "catboost": "/dave/data/model3",
-    "xgboost": "/dave/data/model4",
+    "forest": modelsdir + "/model1",
+    "hgb": modelsdir + "/model2",
+    "catboost": modelsdir + "/model3",
+    "xgboost": modelsdir + "/model4",
 }
 
 
 def load_model(type):
+    """
+    Load the model from disk
+    type = "forest" or "hgb" or "catboost" or "xgboost"
+    """
     path = models[type]
 
     if type == "forest" or type == "hgb":

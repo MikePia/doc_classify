@@ -1,3 +1,4 @@
+import os
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
@@ -120,12 +121,12 @@ def train_xgboost(X_train, y_train, X_test, y_test):
 
 
 if __name__ == "__main__":
-    # %% [markdown]
-    # ## Implement Model Training
-
-    # %%
-    dff_pickle_path = "/dave/data/df_features.pkl"
-    features_path = "/dave/data/features_array.pkl.npy"
+    
+    modelsdir = os.getenv("MODELS_DIR")
+    
+    dff_pickle_path = modelsdir + "/df_features.pkl"
+    features_path = modelsdir + "/features_array.pkl.npy"
+    
     features = load_np_array_from_pickle(features_path)
     df = load_df_from_pickle(dff_pickle_path)
 

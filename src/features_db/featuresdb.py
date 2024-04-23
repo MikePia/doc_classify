@@ -1,13 +1,12 @@
 import csv
 import json
+
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
 
-
 # Define the base class
 Base = declarative_base()
-
 
 engine = None
 
@@ -73,9 +72,7 @@ class DocumentFeature(Base):
     feature = relationship(Feature)
 
 
-
 def createdb():
-
     # Create an engine that stores data in the local directory's features.db file.
     engine = create_engine("sqlite:///features.db")
 
@@ -85,7 +82,6 @@ def createdb():
 
 
 def populate_db(engine):
-
     # Instantiate a session
     session = Session()
 
@@ -153,7 +149,9 @@ def find_document_by_name(document_name):
         session.close()
 
 
-def add_document_with_features(document_name, classification_type, features_with_descriptions):
+def add_document_with_features(
+    document_name, classification_type, features_with_descriptions
+):
     """
     Adds a document with associated features and descriptions to the database.
 
@@ -169,7 +167,9 @@ def add_document_with_features(document_name, classification_type, features_with
 
     session = Session()
     # Check if the classification exists; if not, create a new one
-    classification = session.query(Classification).filter_by(type=classification_type).first()
+    classification = (
+        session.query(Classification).filter_by(type=classification_type).first()
+    )
     if not classification:
         classification = Classification(type=classification_type)
         session.add(classification)
@@ -189,7 +189,9 @@ def add_document_with_features(document_name, classification_type, features_with
 
         # Create a new DocumentFeature instance
         description_json = json.dumps(description)
-        document_feature = DocumentFeature(document=new_document, feature=feature, description=description_json)
+        document_feature = DocumentFeature(
+            document=new_document, feature=feature, description=description_json
+        )
         session.add(document_feature)
 
     # Commit the new document, its features, and the relationships to the database
@@ -198,7 +200,9 @@ def add_document_with_features(document_name, classification_type, features_with
 
 def get_features_from_type(classifier, filter=None):
     session = Session()
-    presentations = session.query(Document).filter_by(classification_id=classifier).all()
+    presentations = (
+        session.query(Document).filter_by(classification_id=classifier).all()
+    )
     features = []
     for presentation in presentations:
         for feature in presentation.features:
@@ -207,13 +211,20 @@ def get_features_from_type(classifier, filter=None):
                     continue
                 else:
                     # Get documentfeature description
-                    docfeat = session.query(DocumentFeature).filter_by(document_id=presentation.id, feature_id=feature.id).first()
+                    docfeat = (
+                        session.query(DocumentFeature)
+                        .filter_by(document_id=presentation.id, feature_id=feature.id)
+                        .first()
+                    )
 
-                    features.append((presentation.id, feature.name, docfeat.description))
+                    features.append(
+                        (presentation.id, feature.name, docfeat.description)
+                    )
 
             else:
                 features.append((presentation.id, feature.name))
     return features
+
 
 if __name__ == "__main__":
     # engine = createdb()
@@ -230,9 +241,9 @@ if __name__ == "__main__":
     #     print("Document not found.")
     features = get_features_from_type(1, filter="invest")
     # Save to csv
-    with open('data/analysis/invest.csv', 'w', newline='') as csvfile:
+    with open("data/analysis/invest.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['presentation_id', 'feature_name'])
+        writer.writerow(["presentation_id", "feature_name"])
         for feature in features:
             writer.writerow(feature)
     print()

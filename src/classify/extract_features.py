@@ -7,10 +7,10 @@ from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.stats import entropy
 import pickle
+from dotenv import load_dotenv
 
 import warnings
 from sklearn.exceptions import ConvergenceWarning
-
 
 
 from classify.util import (
@@ -20,7 +20,10 @@ from classify.util import (
     load_model,
 )
 
+load_dotenv()  # Load environment variables from .env file
 logger = logging.getLogger(__name__)
+models_dir = os.getenv("MODELS_DIR")
+assert models_dir is not None, "models_dir environment variable not set"
 
 
 def check_aspect_ratio_and_mix_feature(pdf_path):
@@ -601,7 +604,7 @@ keywords = {
 
 
 def load_from_disk(include_model=False):
-    dfpickle_path = "/dave/data/df.pkl"
+    dfpickle_path = models_dir + "/df.pkl"
     if not os.path.exists(dfpickle_path):
         print(
             "Go back and do the preprocessing step above before running this cell for feature extraction"
@@ -611,10 +614,11 @@ def load_from_disk(include_model=False):
         df = load_df_from_pickle(dfpickle_path)
 
     # %%
-    dff_pickle_path = "/dave/data/df_features.pkl"
-    features_path = "/dave/data/features_array.pkl.npy"
-    features_array_ppath = "/dave/data/features_array.pkl"
-    tdif_vectorizer_pickle_path = "/dave/data/tdif_vectorizer.pkl"
+    dff_pickle_path = models_dir + "/df_features.pkl"
+    features_path = models_dir + "/features_array.pkl.npy"
+    features_array_ppath = models_dir + "/features_array.pkl"
+    tdif_vectorizer_pickle_path = models_dir + "/tdif_vectorizer.pkl"
+    
 
     force = False
     if (

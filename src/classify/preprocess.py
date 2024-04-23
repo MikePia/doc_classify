@@ -24,6 +24,9 @@ def pdf_to_text(path):
                 continue
                 # Optionally, continue to the next page or log the error
         return text
+    except fitz.FileNotFoundError:
+        logger.info(f"File not found: {path}")
+        raise ValueError(f"File not found: {path}")
     except Exception as e:
         logger.info(f"Error processing file {path}: {e}")
         return ""

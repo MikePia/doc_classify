@@ -95,7 +95,7 @@ def download_file(url):
         doc_text =  driver.find_element(By.TAG_NAME, "body").text
         print('take a peak')
         if doc_text:
-            print(doc_text[:100])
+            print("Anything in the doc_text?", doc_text[:100])
         driver.quit()
         return ""
     # Close the driver
