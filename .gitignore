@@ -7,3 +7,4 @@ src/classify.egg-info*
 src/.env
 Main_errors.log
 src/classify/classify_errors.log
+.env
